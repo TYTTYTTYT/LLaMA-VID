@@ -46,7 +46,7 @@ conda create -n llamavid python=3.10 -y
 conda activate llamavid
 cd LLaMA-VID
 pip install --upgrade pip  # enable PEP 660 support
-pip install -e .
+pip install -e . --config-settings editable_mode=compat
 ```
 
 3. Install additional packages for training cases
