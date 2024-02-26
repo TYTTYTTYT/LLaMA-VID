@@ -23,8 +23,15 @@ from llamavid.model import LlavaLlamaAttForCausalLM
 from llamavid.constants import DEFAULT_IMAGE_PATCH_TOKEN, DEFAULT_IM_START_TOKEN, DEFAULT_IM_END_TOKEN
 
 
-def load_pretrained_model(model_path, model_base, model_name, load_8bit=False, load_4bit=False, device_map="auto", device="cuda"):
+def load_pretrained_model(
+        model_path, model_base, model_name,
+        image_processor_path: str,
+        mm_vision_tower_path: str,
+        load_8bit=False, load_4bit=False, device_map="auto", device="cuda"
+    ):
     kwargs = {"device_map": device_map}
+    kwargs['image_processor'] = image_processor_path
+    kwargs['mm_vision_tower'] = mm_vision_tower_path
 
     if load_8bit:
         kwargs['load_in_8bit'] = True
@@ -53,6 +60,7 @@ def load_pretrained_model(model_path, model_base, model_name, load_8bit=False, l
             model.load_state_dict(mm_projector_weights, strict=False)
         else:
             tokenizer = AutoTokenizer.from_pretrained(model_path, use_fast=False)
+            print('tokenizer loaded')
             model = LlavaLlamaAttForCausalLM.from_pretrained(model_path, low_cpu_mem_usage=True, **kwargs)
 
     else:
