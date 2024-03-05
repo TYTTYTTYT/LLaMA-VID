@@ -41,8 +41,6 @@ class LlavaLlamaAttForCausalLM(LlamaForCausalLM, LLaMAVIDMetaForCausalLM):
 
     def __init__(self, config):
         super(LlamaForCausalLM, self).__init__(config)
-        print('config')
-        print(config)
         self.model = LlavaAttLlamaModel(config)
 
         self.lm_head = nn.Linear(config.hidden_size, config.vocab_size, bias=False)
@@ -52,6 +50,9 @@ class LlavaLlamaAttForCausalLM(LlamaForCausalLM, LLaMAVIDMetaForCausalLM):
 
     def get_model(self):
         return self.model
+    
+    def get_llama(self) -> torch.nn.Module:
+        return nn.ModuleList([self.lm_head, self.model.embed_tokens, self.model.norm, self.model.layers])
 
     def forward(
         self,

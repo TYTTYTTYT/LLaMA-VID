@@ -27,7 +27,10 @@ def load_pretrained_model(
         model_path, model_base, model_name,
         image_processor_path: str,
         mm_vision_tower_path: str,
-        load_8bit=False, load_4bit=False, device_map="auto", device="cuda"
+        load_8bit=False, 
+        load_4bit=False, 
+        device_map=0, 
+        device="cuda:0"
     ):
     kwargs = {"device_map": device_map}
     kwargs['image_processor'] = image_processor_path
@@ -60,7 +63,6 @@ def load_pretrained_model(
             model.load_state_dict(mm_projector_weights, strict=False)
         else:
             tokenizer = AutoTokenizer.from_pretrained(model_path, use_fast=False)
-            print('tokenizer loaded')
             model = LlavaLlamaAttForCausalLM.from_pretrained(model_path, low_cpu_mem_usage=True, **kwargs)
 
     else:
