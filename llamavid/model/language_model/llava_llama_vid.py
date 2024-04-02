@@ -53,6 +53,40 @@ class LlavaLlamaAttForCausalLM(LlamaForCausalLM, LLaMAVIDMetaForCausalLM):
     
     def get_llama(self) -> torch.nn.Module:
         return nn.ModuleList([self.lm_head, self.model.embed_tokens, self.model.norm, self.model.layers])
+    
+    def get_projector(self) -> torch.nn.Module:
+        return nn.ModuleList([
+            self.model.mm_projector,
+            self.model.vlm_att_encoder,
+            self.model.vlm_att_projector,
+            self.model.vlm_att_key_projector,
+            self.model.vlm_att_val_projector,
+            self.model.vlm_att_ln
+        ])
+        
+    def freeze_llama(self):
+        for param in self.get_llama().parameters():
+            param.requires_grad = False
+    
+    def heat_llama(self):
+        for param in self.get_llama().parameters():
+            param.requires_grad = True
+
+    def freeze_vision_tower(self):
+        for param in self.get_vision_tower().parameters():
+            param.requires_grad = False
+            
+    def heat_vision_tower(self):
+        for param in self.get_vision_tower().parameters():
+            param.requires_grad = True
+            
+    def freeze_projector(self):
+        for param in self.get_projector().parameters():
+            param.requires_grad = False
+            
+    def heat_projector(self):
+        for param in self.get_projector().parameters():
+            param.requires_grad = True
 
     def forward(
         self,
